@@ -126,6 +126,66 @@ button:hover {
     overflow-y: auto;
 }
 
+.chat-window {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    min-height: 280px;
+}
+
+.chat-message {
+    max-width: 82%;
+    padding: 10px 12px;
+    border-radius: 8px;
+    line-height: 1.4;
+    word-wrap: break-word;
+}
+
+.chat-message p {
+    margin: 4px 0 0;
+}
+
+.chat-message ul {
+    margin: 8px 0 0;
+    padding-left: 18px;
+}
+
+.chat-message.bot {
+    align-self: flex-start;
+    background: #ffffff;
+    color: #222;
+    border: 1px solid #e5e5e5;
+}
+
+.chat-message.user {
+    align-self: flex-end;
+    background: #ff8a80;
+    color: #ffffff;
+    text-align: right;
+}
+
+.chat-sender {
+    display: block;
+    font-size: 0.78em;
+    font-weight: bold;
+    opacity: 0.75;
+}
+
+.chat-input-row {
+    display: flex;
+    gap: 10px;
+    margin-top: 14px;
+}
+
+.chat-input-row input {
+    margin-top: 0;
+}
+
+.chat-input-row button {
+    flex: 0 0 auto;
+    margin: 0;
+}
+
 .task-list {
     list-style-type: none;
     padding: 0;
