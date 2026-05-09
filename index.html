@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Virtual Assistant</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Smart Virtual Assistant</h1>
+
+        <div id="main-menu" class="menu">
+            <a href="#" class="menu-item" onclick="showSection('chatbot')">Chatbot</a>
+            <a href="#" class="menu-item" onclick="showSection('todo')">To-Do List</a>
+            <a href="#" class="menu-item" onclick="showSection('search')">Search</a>
+            <a href="#" class="menu-item" onclick="showSection('reminder')">Reminders</a>
+            <a href="#" class="menu-item" onclick="showSection('calculator')">Calculator</a>
+        </div>
+
+        <!-- Chatbot Section -->
+        <div id="chatbot-section" class="chatbot-section">
+            <button class="back-btn" onclick="showMainMenu()">← Back</button>
+            <h2>Chatbot</h2>
+            <div class="sub-menu">
+                <button onclick="getDateTime()">Date & Time</button>
+                <button onclick="greetUser()">Greetings</button>
+                <button onclick="showCalculator()">Calculator</button>
+                <button onclick="showDictionary()">Dictionary</button>
+                <button onclick="changeBotName()">Change Name</button>
+            </div>
+            <div id="chat-output" class="output"></div>
+        </div>
+
+        <!-- Calculator Section (for chatbot) -->
+        <div id="calc-section" class="calculator-section" style="display: none;">
+            <h3>Calculator</h3>
+            <div class="input-group">
+                <input type="number" id="calc-num1" placeholder="First number">
+                <select id="calc-op">
+                    <option value="+">+</option>
+                    <option value="-">-</option>
+                    <option value="*">*</option>
+                    <option value="/">/</option>
+                </select>
+                <input type="number" id="calc-num2" placeholder="Second number">
+                <button onclick="calculateInChat()">Calculate</button>
+            </div>
+            <div id="calc-result-chat" class="output"></div>
+            <button onclick="hideCalculator()">Back to Chatbot</button>
+        </div>
+
+        <!-- To-Do List Section -->
+        <div id="todo-section" class="todo-section">
+            <button class="back-btn" onclick="showMainMenu()">← Back</button>
+            <h2>To-Do List</h2>
+            <div class="input-group">
+                <input type="text" id="task-input" placeholder="Enter a new task...">
+                <button onclick="addTask()">Add Task</button>
+            </div>
+            <ul id="task-list" class="task-list"></ul>
+        </div>
+
+        <!-- Search Section -->
+        <div id="search-section" class="search-section">
+            <button class="back-btn" onclick="showMainMenu()">← Back</button>
+            <h2>Web Search</h2>
+            <div class="input-group">
+                <input type="text" id="search-input" placeholder="Enter search query...">
+                <button onclick="performSearch()">Search</button>
+            </div>
+        </div>
+
+        <!-- Reminder Section -->
+        <div id="reminder-section" class="reminder-section">
+            <button class="back-btn" onclick="showMainMenu()">← Back</button>
+            <h2>Reminders</h2>
+            <div class="input-group">
+                <input type="text" id="reminder-message" placeholder="Reminder message...">
+                <input type="number" id="reminder-time" placeholder="Time in seconds from now...">
+                <button onclick="addReminder()">Add Reminder</button>
+            </div>
+            <div id="reminder-output" class="output"></div>
+        </div>
+
+        <!-- Calculator Section -->
+        <div id="calculator-section" class="calculator-section">
+            <button class="back-btn" onclick="showMainMenu()">← Back</button>
+            <h2>Calculator</h2>
+            <div class="input-group">
+                <input type="number" id="num1" placeholder="First number">
+                <select id="operation">
+                    <option value="+">+</option>
+                    <option value="-">-</option>
+                    <option value="*">*</option>
+                    <option value="/">/</option>
+                </select>
+                <input type="number" id="num2" placeholder="Second number">
+                <button onclick="calculate()">Calculate</button>
+            </div>
+            <div id="calc-result" class="output"></div>
+        </div>
+    </div>
+
+    <script>
+        let botName = "ChatBot";
+        let tasks = [];
+        let reminders = [];
+
+        const dictionary = {
+            "hello": "A greeting or expression of goodwill.",
+            "programming": "The process of designing and building executable computer software to accomplish a specific task.",
+            "motivation": "The reason or reasons one has for acting or behaving in a particular way.",
+            "ai": "Technology that enables machines to mimic human intelligence.",
+            "blockchain": "A decentralized and secure digital ledger technology.",
+            "cybersecurity": "Protecting systems and data from cyber threats.",
+            "cloudcomputing": "Using remote servers for data storage and computing power.",
+            "encryption": "Converting data into a secure, unreadable format.",
+            "ml": "A subset of AI that enables systems to learn from data.",
+            "metaverse": "A virtual universe combining augmented and virtual reality."
+        };
+
+        function showSection(sectionName) {
+            document.getElementById('main-menu').style.display = 'none';
+            document.querySelectorAll('.chatbot-section, .todo-section, .search-section, .reminder-section, .calculator-section').forEach(section => {
+                section.classList.remove('active');
+            });
+            document.getElementById(sectionName + '-section').classList.add('active');
+        }
+
+        function showMainMenu() {
+            document.getElementById('main-menu').style.display = 'grid';
+            document.querySelectorAll('.chatbot-section, .todo-section, .search-section, .reminder-section, .calculator-section, #calc-section').forEach(section => {
+                section.classList.remove('active');
+                section.style.display = 'none';
+            });
+        }
+
+        // Chatbot functions
+        function getDateTime() {
+            const now = new Date();
+            const output = document.getElementById('chat-output');
+            output.innerHTML += `<p><strong>${botName}:</strong> Current Date & Time: ${now.toString()}</p>`;
+        }
+
+        function greetUser() {
+            const greetings = [
+                "Hi there! How can I help you today?",
+                "Hello! How can I assist you today?",
+                "Hey! What can I do for you today?"
+            ];
+            const output = document.getElementById('chat-output');
+            output.innerHTML += `<p><strong>${botName}:</strong> ${greetings[Math.floor(Math.random() * greetings.length)]}</p>`;
+        }
+
+        function showCalculator() {
+            document.getElementById('chatbot-section').style.display = 'none';
+            document.getElementById('calc-section').style.display = 'block';
+        }
+
+        function hideCalculator() {
+            document.getElementById('calc-section').style.display = 'none';
+            document.getElementById('chatbot-section').style.display = 'block';
+        }
+
+        function calculateInChat() {
+            const num1 = parseFloat(document.getElementById('calc-num1').value);
+            const num2 = parseFloat(document.getElementById('calc-num2').value);
+            const op = document.getElementById('calc-op').value;
+            let result;
+            if (isNaN(num1) || isNaN(num2)) {
+                result = "Invalid numbers";
+            } else {
+                switch(op) {
+                    case '+': result = num1 + num2; break;
+                    case '-': result = num1 - num2; break;
+                    case '*': result = num1 * num2; break;
+                    case '/': 
+                        if (num2 === 0) result = "Error! Division by zero.";
+                        else result = num1 / num2;
+                        break;
+                }
+            }
+            document.getElementById('calc-result-chat').innerHTML = `<p>Result: ${result}</p>`;
+        }
+
+        function showDictionary() {
+            const word = prompt("Enter a word to look up (hello, programming, motivation, ai, blockchain, cybersecurity, cloudcomputing, encryption, ml, metaverse):");
+            if (word) {
+                const lowerWord = word.toLowerCase();
+                const output = document.getElementById('chat-output');
+                if (dictionary[lowerWord]) {
+                    output.innerHTML += `<p><strong>${botName}:</strong> ${lowerWord}: ${dictionary[lowerWord]}</p>`;
+                } else {
+                    output.innerHTML += `<p><strong>${botName}:</strong> Sorry, I don't know that word.</p>`;
+                }
+            }
+        }
+
+        function changeBotName() {
+            const newName = prompt("Enter a new name for me:");
+            if (newName) {
+                botName = newName;
+                const output = document.getElementById('chat-output');
+                output.innerHTML += `<p><strong>${botName}:</strong> Great! My new name is ${botName}!</p>`;
+            }
+        }
+
+        // To-Do List functions
+        function addTask() {
+            const taskInput = document.getElementById('task-input');
+            const task = taskInput.value.trim();
+            if (task) {
+                tasks.push({ description: task, completed: false });
+                renderTasks();
+                taskInput.value = '';
+            }
+        }
+
+        function renderTasks() {
+            const taskList = document.getElementById('task-list');
+            taskList.innerHTML = '';
+            tasks.forEach((task, index) => {
+                const li = document.createElement('li');
+                if (task.completed) li.classList.add('completed');
+                li.innerHTML = `
+                    ${task.description}
+                    <div class="task-actions">
+                        <button onclick="completeTask(${index})">Complete</button>
+                        <button onclick="deleteTask(${index})">Delete</button>
+                    </div>
+                `;
+                taskList.appendChild(li);
+            });
+        }
+
+        function completeTask(index) {
+            tasks[index].completed = true;
+            renderTasks();
+        }
+
+        function deleteTask(index) {
+            tasks.splice(index, 1);
+            renderTasks();
+        }
+
+        // Search function
+        function performSearch() {
+            const query = document.getElementById('search-input').value.trim();
+            if (query) {
+                window.open(`https://www.google.com/search?q=${encodeURIComponent(query)}`, '_blank');
+            }
+        }
+
+        // Reminder functions
+        function addReminder() {
+            const message = document.getElementById('reminder-message').value.trim();
+            const time = parseInt(document.getElementById('reminder-time').value);
+            if (message && time > 0) {
+                const reminderTime = Date.now() + time * 1000;
+                reminders.push({ message, reminderTime });
+                setTimeout(() => {
+                    alert(`Reminder: ${message}`);
+                }, time * 1000);
+                const output = document.getElementById('reminder-output');
+                output.innerHTML += `<p>Reminder set: "${message}" in ${time} seconds</p>`;
+                document.getElementById('reminder-message').value = '';
+                document.getElementById('reminder-time').value = '';
+            }
+        }
+
+        // Calculator function (main)
+        function calculate() {
+            const num1 = parseFloat(document.getElementById('num1').value);
+            const num2 = parseFloat(document.getElementById('num2').value);
+            const op = document.getElementById('operation').value;
+            let result;
+            if (isNaN(num1) || isNaN(num2)) {
+                result = "Invalid numbers";
+            } else {
+                switch(op) {
+                    case '+': result = num1 + num2; break;
+                    case '-': result = num1 - num2; break;
+                    case '*': result = num1 * num2; break;
+                    case '/': 
+                        if (num2 === 0) result = "Error! Division by zero.";
+                        else result = num1 / num2;
+                        break;
+                }
+            }
+            document.getElementById('calc-result').innerHTML = `<p>Result: ${result}</p>`;
+        }
+    </script>
+</body>
+</html>
